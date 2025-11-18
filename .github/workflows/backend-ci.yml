@@ -8,22 +8,67 @@ on:
 
 jobs:
   test-backend:
+    name: Backend Tests
     runs-on: ubuntu-latest
+    # Provide MySQL service for future DB-dependent tests (current tests mock DB)
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: niahealth
+        ports:
+          - 3306:3306
+        # Health check ensures DB is ready before tests (5 attempts)
+        options: >-
+          --health-cmd="mysqladmin ping -proot" --health-interval=10s --health-timeout=5s --health-retries=5
     defaults:
       run:
         working-directory: backend
+    env:
+      NODE_ENV: test
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: niahealth
+      # Minimal required JWT/email vars to avoid undefined access in modules
+      JWT_ACCESS_SECRET: testaccess
+      JWT_REFRESH_SECRET: testrefresh
+      SENDGRID_API_KEY: test
+      FRONTEND_URL: http://localhost:5173
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
+
       - name: Install dependencies
         run: npm ci
+
+      - name: Verify MySQL connectivity
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y mysql-client
+          mysql -h 127.0.0.1 -uroot -proot -e "SHOW DATABASES;"
+
+      - name: Load schema (optional)
+        if: always()
+        run: |
+          if [ -f "../docs/DB_SCHEMA_SIMPLE.sql" ]; then \
+            mysql -h 127.0.0.1 -uroot -proot niahealth < ../docs/DB_SCHEMA_SIMPLE.sql; \
+          else \
+            echo "Schema file not found, skipping"; \
+          fi
+
       - name: Run tests
-        run: npm test -- --ci --passWithNoTests
+        # Removed --ci flag because npm warning about expanding it; jest auto-detects CI.
+        run: npm test -- --passWithNoTests
+
       - name: Upload coverage
         if: success()
         uses: actions/upload-artifact@v4
