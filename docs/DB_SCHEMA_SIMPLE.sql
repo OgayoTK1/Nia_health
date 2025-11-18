@@ -317,15 +317,20 @@ DELIMITER ;
 -- EVENTS FOR AUTOMATED TASKS
 -- =============================================
 
--- Enable event scheduler
+-- Enable event scheduler (optional, if needed)
+SET GLOBAL event_scheduler = ON;
 
 -- Event: Clean expired OTPs every hour
+CREATE EVENT IF NOT EXISTS ev_clean_expired_otps
 ON SCHEDULE EVERY 1 HOUR
-DO CALL clean_expired_otps();
+DO
+    CALL clean_expired_otps();
 
 -- Event: Purge old audit logs monthly
+CREATE EVENT IF NOT EXISTS ev_purge_old_audit_logs
 ON SCHEDULE EVERY 1 MONTH
-DO CALL purge_old_audit_logs();
+DO
+    CALL purge_old_audit_logs();
 
 -- =============================================
 -- END OF SCHEMA
