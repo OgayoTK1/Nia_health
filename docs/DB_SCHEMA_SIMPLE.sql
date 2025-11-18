@@ -7,7 +7,10 @@
 
 -- Create database
 -- Database already created
-USE niahealth_new;
+-- Normalize to single database name used by CI and local dev.
+-- Create if not exists (safe idempotent operation) then use it.
+CREATE DATABASE IF NOT EXISTS niahealth;
+USE niahealth;
 
 -- Set character set
 SET NAMES utf8mb4;
