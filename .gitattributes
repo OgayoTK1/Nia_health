@@ -1,0 +1,34 @@
+# Normalize line endings and prevent CRLF warning spam
+# Auto-detect text files and normalize to LF in repo
+* text=auto
+
+# Source code & scripts should use LF (works cross-platform and needed for bash)
+*.js  text eol=lf
+*.jsx text eol=lf
+*.cjs text eol=lf
+*.json text eol=lf
+*.mjs text eol=lf
+*.ts  text eol=lf
+*.tsx text eol=lf
+*.sh  text eol=lf
+*.sql text eol=lf
+*.md  text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+
+# Windows-specific scripts may keep CRLF
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+
+# Allow binary files to be untouched
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.svg text eol=lf
+*.ico binary
+
+# Ensure lockfiles consistent
+package-lock.json text eol=lf
