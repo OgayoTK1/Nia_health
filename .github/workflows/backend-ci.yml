@@ -56,13 +56,13 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install -y mysql-client
-          mysql -h 127.0.0.1 -uroot -proot -e "SHOW DATABASES;"
+          mysql -h 127.0.0.1 -uroot --password="${DB_PASSWORD}" -e "SHOW DATABASES;"
 
       - name: Load schema (optional)
         if: always()
         run: |
           if [ -f "../docs/DB_SCHEMA_SIMPLE.sql" ]; then \
-            mysql -h 127.0.0.1 -uroot -proot niahealth < ../docs/DB_SCHEMA_SIMPLE.sql; \
+            mysql -h 127.0.0.1 -uroot --password="${DB_PASSWORD}" niahealth < ../docs/DB_SCHEMA_SIMPLE.sql; \
           else \
             echo "Schema file not found, skipping"; \
           fi
