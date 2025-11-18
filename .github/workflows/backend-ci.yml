@@ -46,8 +46,8 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-          # Point to lockfile inside backend directory so caching doesn't fail
-          cache-dependency-path: backend/package-lock.json
+          # Path is relative to repo root since setup-node runs before working-directory takes effect
+          cache-dependency-path: './backend/package-lock.json'
 
       - name: Install dependencies
         run: npm ci
