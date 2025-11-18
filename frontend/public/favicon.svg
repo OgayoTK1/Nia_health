@@ -1,0 +1,11 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Simple but recognizable at small size -->
+  <circle cx="16" cy="16" r="15" fill="#10B981"/>
+  
+  <!-- White cross -->
+  <rect x="14" y="8" width="4" height="16" rx="1" fill="white"/>
+  <rect x="8" y="14" width="16" height="4" rx="1" fill="white"/>
+  
+  <!-- Small accent dot -->
+  <circle cx="16" cy="16" r="2" fill="#059669"/>
+</svg>
