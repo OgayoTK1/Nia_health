@@ -24,7 +24,7 @@ const LoginPage = () => {
     }
   }, [location.state]);
 
-  const [userType, setUserType] = useState('patient'); // 'patient' or 'health-worker'
+  const [userType, setUserType] = useState('patient'); // 'patient', 'health-worker' or 'admin'
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -96,11 +96,13 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      const endpoint = userType === 'patient' 
-        ? '/auth/login/patient' 
-        : '/auth/login/health-worker';
+      const endpoint = userType === 'patient'
+        ? '/auth/login/patient'
+        : userType === 'health-worker'
+          ? '/auth/login/health-worker'
+          : '/auth/login/admin';
 
-      console.log('Sending login data:', formData);
+      console.log('Sending login data:', payload, 'endpoint:', endpoint);
 
       const response = await api.post(endpoint, payload);
 
@@ -224,6 +226,17 @@ const LoginPage = () => {
               }`}
             >
               Health Worker
+            </button>
+            <button
+              type="button"
+              onClick={() => setUserType('admin')}
+              className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
+                userType === 'admin'
+                  ? 'bg-white text-primary-600 shadow'
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              Admin
             </button>
           </div>
         </div>
