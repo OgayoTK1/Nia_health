@@ -39,3 +39,6 @@ coverage/
 # Temporary files
 tmp/
 temp/
+
+# Ignore local helper scripts in backend that may contain credentials or are for local maintenance
+/backend/*.js

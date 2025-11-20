@@ -62,12 +62,27 @@ const sendEmail = async ({ to, subject, html, text }) => {
       return { success: false, error: 'SendGrid API key not configured' };
     }
 
+    // Ensure SendGrid always receives a non-empty `text` content value
+    const fallbackText = (() => {
+      if (text && String(text).trim().length) return String(text);
+      if (html && String(html).trim().length) {
+        // Strip tags to create a simple text fallback
+        try {
+          const stripped = String(html).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+          return stripped.length ? stripped.slice(0, 1000) : 'NiaHealth notification';
+        } catch (e) {
+          return 'NiaHealth notification';
+        }
+      }
+      return 'NiaHealth notification';
+    })();
+
     const msg = {
       to,
       from: DEFAULT_FROM,
       subject,
       html,
-      text: text || ''
+      text: fallbackText
     };
 
     const result = await sgMail.send(msg);
