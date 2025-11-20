@@ -56,6 +56,7 @@ const createAppointment = asyncHandler(async (req, res) => {
 
   // Send confirmation email
   if (patients.length > 0) {
+    try {
       const emailResult = await sendAppointmentEmail(patients[0].email, {
         patientName: patients[0].name,
         clinicName: clinics[0].name,
@@ -68,12 +69,22 @@ const createAppointment = asyncHandler(async (req, res) => {
       if (!emailResult?.success) {
         console.error('❌ Appointment confirmation email failed:', emailResult?.error || emailResult);
       } else {
-        console.log('✅ Appointment confirmation email sent:', emailResult);
+        console.log('✅ Appointment confirmation email sent.');
       }
+    } catch (emailError) {
+        console.error('🔥🔥 CRITICAL: Sending appointment email threw an exception! 🔥🔥');
+        console.error(emailError);
+    }
   }
 
   // Log audit
-  await logAudit(patientId, 'patient', 'create', 'appointment', appointmentId, 'Appointment created', req);
+  try {
+    await logAudit(patientId, 'patient', 'create', 'appointment', appointmentId, 'Appointment created', req);
+    console.log('✅ Audit log created for appointment.');
+  } catch (auditError) {
+    console.error('🔥🔥 CRITICAL: Logging audit trail for appointment creation failed! 🔥🔥');
+    console.error(auditError);
+  }
 
   res.status(201).json({
     success: true,
@@ -118,7 +129,7 @@ const getPatientAppointments = asyncHandler(async (req, res) => {
   }
 
   sql += ' ORDER BY a.appointment_date DESC, a.appointment_time DESC LIMIT ? OFFSET ?';
-  params.push(parseInt(validLimitNum, 10).toString(), parseInt(offset, 10).toString());
+  params.push(validLimitNum, offset);
 
   console.log('🔍 FINAL SQL PARAMS:', {
     sql: sql.substring(sql.length - 50),
