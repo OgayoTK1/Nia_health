@@ -15,12 +15,20 @@ const api = axios.create({
 // Request interceptor - add token to requests
 api.interceptors.request.use(
   (config) => {
+    // Do NOT attach token for auth endpoints (login/register/refresh)
+    const url = config.url || '';
+    if (url.includes('/auth/login') || url.includes('/auth/register') || url.includes('/auth/refresh')) {
+      console.log('🔒 Skipping auth header for request:', url);
+      return config;
+    }
+
     const token = localStorage.getItem('accessToken');
     if (token) {
+      config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${token}`;
-      console.log('🔑 Token added to request:', config.url);
+      console.log('🔑 Token added to request:', url);
     } else {
-      console.warn('⚠️ No token found for request:', config.url);
+      console.warn('⚠️ No token found for request:', url);
     }
     return config;
   },
