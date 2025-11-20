@@ -56,15 +56,18 @@ const LoginPage = () => {
     const newErrors = {};
 
     // Email validation
+    // Trim inputs before validation to avoid invisible whitespace issues
+    const emailTrimmed = (formData.email || '').trim();
+    const passwordTrimmed = (formData.password || '').trim();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email) {
+    if (!emailTrimmed) {
       newErrors.email = 'Email is required';
-    } else if (!emailRegex.test(formData.email)) {
+    } else if (!emailRegex.test(emailTrimmed)) {
       newErrors.email = 'Please enter a valid email';
     }
 
     // Password validation
-    if (!formData.password) {
+    if (!passwordTrimmed) {
       newErrors.password = 'Password is required';
     }
 
@@ -84,6 +87,12 @@ const LoginPage = () => {
       return;
     }
 
+    // Prepare trimmed payload to avoid invisible whitespace issues
+    const payload = {
+      email: (formData.email || '').trim(),
+      password: (formData.password || '').trim()
+    };
+
     setIsLoading(true);
 
     try {
@@ -93,7 +102,7 @@ const LoginPage = () => {
 
       console.log('Sending login data:', formData);
 
-      const response = await api.post(endpoint, formData);
+      const response = await api.post(endpoint, payload);
 
       if (response.data.success) {
         // Check if OTP is required (for health workers)
