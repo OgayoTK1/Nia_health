@@ -30,6 +30,8 @@ router.post('/login/patient', authLimiter, validateLogin, loginPatient);
 // Health Worker routes
 router.post('/register/health-worker', authenticate, isAdmin, validatePatientRegistration, registerHealthWorker);
 router.post('/login/health-worker', authLimiter, validateLogin, loginHealthWorker);
+// Admin login
+router.post('/login/admin', authLimiter, validateLogin, loginAdmin);
 
 // OTP routes
 router.post('/verify-otp', otpLimiter, validateOTP, verifyOTP);

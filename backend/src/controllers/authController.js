@@ -299,6 +299,60 @@ const loginHealthWorker = asyncHandler(async (req, res) => {
   });
 });
 
+// Admin Login
+const loginAdmin = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  // Find admin
+  const admins = await query('SELECT * FROM admins WHERE email = ?', [email]);
+  if (admins.length === 0) {
+    return res.status(401).json({ success: false, message: 'Invalid email or password' });
+  }
+
+  const admin = admins[0];
+
+  if (!admin.password) {
+    console.error('❌ Missing password for admin id:', admin.id);
+    return res.status(401).json({ success: false, message: 'Invalid email or password' });
+  }
+
+  let isPasswordValid = false;
+  try {
+    isPasswordValid = await bcrypt.compare(password, admin.password);
+  } catch (err) {
+    console.error('🔥 bcrypt.compare error for admin id:', admin.id, err && err.message);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+
+  if (!isPasswordValid) {
+    return res.status(401).json({ success: false, message: 'Invalid email or password' });
+  }
+
+  // Successful login - generate tokens
+  const tokens = generateTokens({ id: admin.id, email: admin.email, name: admin.name, role: 'admin', userType: 'admin' });
+
+  // Store refresh token
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  await query('INSERT INTO refresh_tokens (user_id, user_type, token, expires_at) VALUES (?, ?, ?, ?)', [
+    admin.id,
+    'admin',
+    tokens.refreshToken,
+    expiresAt
+  ]);
+
+  // Log audit
+  await logAudit(admin.id, 'admin', 'login', 'admins', admin.id, 'Admin logged in', req);
+
+  res.json({
+    success: true,
+    message: 'Login successful',
+    data: {
+      user: { id: admin.id, name: admin.name, email: admin.email, role: 'admin', userType: 'admin' },
+      ...tokens
+    }
+  });
+});
+
 // Verify OTP
 const verifyOTP = asyncHandler(async (req, res) => {
   const { email, otp, userType = 'patient' } = req.body;
@@ -497,6 +551,7 @@ module.exports = {
   registerHealthWorker,
   loginPatient,
   loginHealthWorker,
+  loginAdmin,
   verifyOTP,
   resendOTP,
   refreshToken,
