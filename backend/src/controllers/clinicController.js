@@ -29,7 +29,7 @@ const getAllClinics = asyncHandler(async (req, res) => {
   }
 
   sql += ' ORDER BY name ASC LIMIT ? OFFSET ?';
-  params.push(parseInt(validLimitNum, 10).toString(), parseInt(offset, 10).toString());
+  params.push(validLimitNum, offset);
 
   console.log('🔍 FINAL CLINICS SQL PARAMS:', {
     sql: sql.substring(sql.length - 40),
