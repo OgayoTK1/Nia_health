@@ -4,10 +4,10 @@ require('dotenv').config();
 
 // Create connection pool
 const pool = mysql.createPool({
-  host: process.env.MYSQLHOST || 'localhost',
+  host: process.env.MYSQLHOST || 'mysql.railway.internal',
   user: process.env.MYSQLUSER || 'root',
-  password: process.env.MYSQLPASSWORD || '',
-  database: process.env.MYSQLDATABASE || 'niahealth',
+  password: process.env.MYSQLPASSWORD || 'ExwQmUnQhMfjhuwnnaZIFbBYZVVVUCh',
+  database: process.env.MYSQLDATABASE || 'railway',
   port: process.env.MYSQLPORT || 3306,
   ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
   waitForConnections: true,
@@ -20,12 +20,26 @@ const pool = mysql.createPool({
 // Test database connection
 const testConnection = async () => {
   try {
+    console.log('🔧 Attempting DB connection with:', {
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      user: process.env.DB_USER,
+      database: process.env.DB_NAME,
+      ssl: process.env.DB_SSL
+    });
     const connection = await pool.getConnection();
     console.log('✅ Database connected successfully');
     connection.release();
     return true;
   } catch (error) {
-    console.error('❌ Database connection failed:', error.message);
+    console.error('❌ Database connection failed:', {
+      error: error.message,
+      code: error.code,
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      database: process.env.DB_NAME,
+      user: process.env.DB_USER
+    });
     return false;
   }
 };

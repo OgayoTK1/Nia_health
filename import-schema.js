@@ -4,11 +4,11 @@ const path = require('path');
 
 async function importSchema() {
   const connection = await mysql.createConnection({
-    host: 'interchange.proxy.rlwy.net',
-    port: 55318,
-    user: 'root',
-    password: 'ExwQmUnQhMfjhuwnnaZIFbBYZVVVUChW',
-    database: 'railway',
+    host: 'sql12.freesqldatabase.com',
+    port: 3306,
+    user: 'sql12808713',
+    password: 'JiP5vk3l1Z',
+    database: 'sql12808713',
     multipleStatements: true
   });
 
