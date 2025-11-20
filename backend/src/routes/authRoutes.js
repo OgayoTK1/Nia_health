@@ -6,6 +6,7 @@ const {
   registerHealthWorker,
   loginPatient,
   loginHealthWorker,
+  loginAdmin,
   verifyOTP,
   resendOTP,
   refreshToken,
