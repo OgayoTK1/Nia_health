@@ -252,14 +252,25 @@ const loginHealthWorker = asyncHandler(async (req, res) => {
   }
 
   const worker = workers[0];
+  // Verify password (guard against missing password_hash)
+  if (!worker.password_hash) {
+    console.error('❌ Missing password_hash for health_worker id:', worker.id);
+    // Treat as invalid credentials
+    return res.status(401).json({ success: false, message: 'Invalid email or password' });
+  }
 
-  // Verify password
-  const isPasswordValid = await bcrypt.compare(password, worker.password_hash);
+  let isPasswordValid = false;
+  try {
+    isPasswordValid = await bcrypt.compare(password, worker.password_hash);
+  } catch (err) {
+    console.error('🔥 bcrypt.compare error for health_worker id:', worker.id, err && err.message);
+    // Do not expose internals to client
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
 
   if (!isPasswordValid) {
     // Update failed login attempts
     await updateFailedLoginAttempts(query, worker.id, 'health_worker');
-    
     return res.status(401).json({
       success: false,
       message: 'Invalid email or password'
