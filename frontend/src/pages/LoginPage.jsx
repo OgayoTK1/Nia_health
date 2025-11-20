@@ -77,6 +77,9 @@ const LoginPage = () => {
     setApiError('');
     setSuccessMessage('');
 
+    // Prevent double submissions
+    if (isLoading) return;
+
     if (!validateForm()) {
       return;
     }
