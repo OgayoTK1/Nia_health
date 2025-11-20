@@ -4,11 +4,11 @@ require('dotenv').config();
 
 // Create connection pool
 const pool = mysql.createPool({
-  host: process.env.MYSQLHOST || 'mysql.railway.internal',
-  user: process.env.MYSQLUSER || 'root',
-  password: process.env.MYSQLPASSWORD || 'ExwQmUnQhMfjhuwnnaZIFbBYZVVVUCh',
-  database: process.env.MYSQLDATABASE || 'railway',
-  port: process.env.MYSQLPORT || 3306,
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'niahealth',
+  port: process.env.DB_PORT || 3306,
   ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
   waitForConnections: true,
   connectionLimit: 10,
