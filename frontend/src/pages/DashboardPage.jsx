@@ -150,22 +150,24 @@ const DashboardPage = () => {
             </div>
           </button>
 
-          {/* Referrals Card */}
-          <button 
-            onClick={() => navigate('/referrals')}
-            className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow text-left w-full"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Referrals</p>
-                <p className="text-3xl font-bold text-blue-600">{stats.referrals}</p>
-                <p className="text-xs text-gray-500 mt-2">Health referrals</p>
+          {/* Referrals Card: Only for health workers and clinic officers */}
+          {(user?.userType === 'health_worker' || user?.userType === 'clinic_officer') && (
+            <button 
+              onClick={() => navigate('/referrals')}
+              className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow text-left w-full"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Referrals</p>
+                  <p className="text-3xl font-bold text-blue-600">{stats.referrals}</p>
+                  <p className="text-xs text-gray-500 mt-2">Health referrals</p>
+                </div>
+                <div className="bg-blue-100 p-3 rounded-lg">
+                  <FileText className="w-8 h-8 text-blue-600" />
+                </div>
               </div>
-              <div className="bg-blue-100 p-3 rounded-lg">
-                <FileText className="w-8 h-8 text-blue-600" />
-              </div>
-            </div>
-          </button>
+            </button>
+          )}
 
           {/* Alerts Card */}
           <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
@@ -247,13 +249,16 @@ const DashboardPage = () => {
                 <Calendar className="w-4 h-4" />
                 Book Appointment
               </button>
-              <button 
-                onClick={() => navigate('/referrals')}
-                className="w-full px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors font-medium text-left flex items-center gap-2"
-              >
-                <FileText className="w-4 h-4" />
-                View Referrals
-              </button>
+              {/* Referrals Quick Link: Only for health workers and clinic officers */}
+              {(user?.userType === 'health_worker' || user?.userType === 'clinic_officer') && (
+                <button 
+                  onClick={() => navigate('/referrals')}
+                  className="w-full px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors font-medium text-left flex items-center gap-2"
+                >
+                  <FileText className="w-4 h-4" />
+                  View Referrals
+                </button>
+              )}
               <button 
                 onClick={() => navigate('/profile')}
                 className="w-full px-4 py-2 bg-green-50 text-green-600 hover:bg-green-100 rounded-lg transition-colors font-medium text-left flex items-center gap-2"

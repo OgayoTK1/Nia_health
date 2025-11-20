@@ -7,7 +7,7 @@ import ReferralForm from '../components/ReferralForm';
 
 const ReferralsPage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   
   const [referrals, setReferrals] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,8 +19,13 @@ const ReferralsPage = () => {
       navigate('/login');
       return;
     }
+    // Block patients from accessing referrals page
+    if (user?.userType === 'patient') {
+      navigate('/dashboard');
+      return;
+    }
     loadReferrals();
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
   const loadReferrals = async () => {
     try {
