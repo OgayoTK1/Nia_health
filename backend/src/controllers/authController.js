@@ -128,98 +128,101 @@ const registerHealthWorker = asyncHandler(async (req, res) => {
 const loginPatient = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  // Check account lockout
-  const lockCheck = await checkAccountLockout(query, email, 'patient');
-  if (lockCheck.isLocked) {
-    return res.status(423).json({
-      success: false,
-      message: lockCheck.message
-    });
-  }
+  try {
+    console.log('🔐 loginPatient attempt for:', email);
 
-  // Find patient
-  const patients = await query(
-    'SELECT * FROM patients WHERE email = ?',
-    [email]
-  );
-
-  if (patients.length === 0) {
-    return res.status(401).json({
-      success: false,
-      message: 'Invalid email or password'
-    });
-  }
-
-  const patient = patients[0];
-
-  // Verify password
-  const isPasswordValid = await bcrypt.compare(password, patient.password_hash);
-
-  if (!isPasswordValid) {
-    // Update failed login attempts
-    await updateFailedLoginAttempts(query, patient.id, 'patient');
-    
-    return res.status(401).json({
-      success: false,
-      message: 'Invalid email or password'
-    });
-  }
-
-  // Check if verified
-  if (!patient.is_verified) {
-    // Resend OTP
-    const otp = generateOTP();
-    const otp_expiry = new Date(Date.now() + 10 * 60 * 1000);
-    
-    await query(
-      'UPDATE patients SET otp = ?, otp_expiry = ? WHERE id = ?',
-      [otp, otp_expiry, patient.id]
-    );
-    
-    await sendOTPEmail(email, otp, patient.name);
-    
-    return res.status(403).json({
-      success: false,
-      message: 'Account not verified. New OTP sent to your email.',
-      requiresVerification: true
-    });
-  }
-
-  // Reset failed attempts
-  await resetFailedLoginAttempts(query, patient.id, 'patient');
-
-  // Generate tokens
-  const tokens = generateTokens({
-    id: patient.id,
-    email: patient.email,
-    name: patient.name,
-    userType: 'patient'
-  });
-
-  // Store refresh token
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-  await query(
-    'INSERT INTO refresh_tokens (user_id, user_type, token, expires_at) VALUES (?, ?, ?, ?)',
-    [patient.id, 'patient', tokens.refreshToken, expiresAt]
-  );
-
-  // Log audit
-  await logAudit(patient.id, 'patient', 'login', 'patient', patient.id, 'Patient logged in', req);
-
-  res.json({
-    success: true,
-    message: 'Login successful',
-    data: {
-      user: {
-        id: patient.id,
-        name: patient.name,
-        email: patient.email,
-        phone: patient.phone,
-        userType: 'patient'
-      },
-      ...tokens
+    // Check account lockout
+    const lockCheck = await checkAccountLockout(query, email, 'patient');
+    if (lockCheck.isLocked) {
+      console.log('🔒 Account locked for:', email, lockCheck.message);
+      return res.status(423).json({
+        success: false,
+        message: lockCheck.message
+      });
     }
-  });
+
+    // Find patient
+    const patients = await query(
+      'SELECT * FROM patients WHERE email = ?',
+      [email]
+    );
+
+    if (patients.length === 0) {
+      console.log('🔍 No patient found for email:', email);
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password'
+      });
+    }
+
+    const patient = patients[0];
+
+    // Verify password (guard against missing password_hash)
+    if (!patient.password_hash) {
+      console.error('❌ Missing password_hash for patient id:', patient.id);
+      // Treat as invalid credentials
+      return res.status(401).json({ success: false, message: 'Invalid email or password' });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, patient.password_hash);
+
+    if (!isPasswordValid) {
+      // Update failed login attempts
+      await updateFailedLoginAttempts(query, patient.id, 'patient');
+      console.log('⚠️ Invalid password attempt for patient id:', patient.id);
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password'
+      });
+    }
+
+    // Check if verified
+    if (!patient.is_verified) {
+      // Resend OTP
+      const otp = generateOTP();
+      const otp_expiry = new Date(Date.now() + 10 * 60 * 1000);
+      await query('UPDATE patients SET otp = ?, otp_expiry = ? WHERE id = ?', [otp, otp_expiry, patient.id]);
+      await sendOTPEmail(email, otp, patient.name);
+      console.log('✉️ Resent OTP for unverified account:', email);
+      return res.status(403).json({
+        success: false,
+        message: 'Account not verified. New OTP sent to your email.',
+        requiresVerification: true
+      });
+    }
+
+    // Reset failed attempts
+    await resetFailedLoginAttempts(query, patient.id, 'patient');
+
+    // Generate tokens
+    const tokens = generateTokens({ id: patient.id, email: patient.email, name: patient.name, userType: 'patient' });
+
+    // Store refresh token
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+    await query('INSERT INTO refresh_tokens (user_id, user_type, token, expires_at) VALUES (?, ?, ?, ?)', [
+      patient.id,
+      'patient',
+      tokens.refreshToken,
+      expiresAt
+    ]);
+
+    // Log audit
+    await logAudit(patient.id, 'patient', 'login', 'patient', patient.id, 'Patient logged in', req);
+
+    console.log('✅ Patient login successful:', patient.email);
+
+    res.json({
+      success: true,
+      message: 'Login successful',
+      data: {
+        user: { id: patient.id, name: patient.name, email: patient.email, phone: patient.phone, userType: 'patient' },
+        ...tokens
+      }
+    });
+  } catch (err) {
+    console.error('🔥 loginPatient ERROR:', err);
+    throw err; // Let the global error handler deal with response
+  }
 });
 
 // Health Worker Login
