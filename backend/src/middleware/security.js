@@ -105,14 +105,22 @@ const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
       process.env.FRONTEND_URL || 'http://localhost:5173',
+      'https://nia-health.vercel.app',
       'http://localhost:5174', // Additional Vite dev server port
       'http://localhost:3000'
     ];
+    
+    console.log('🔍 CORS Check:', { 
+      origin, 
+      frontendUrl: process.env.FRONTEND_URL,
+      allowedOrigins 
+    });
     
     // Allow requests with no origin (mobile apps, Postman, etc.)
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
+      console.log('❌ CORS Blocked:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
