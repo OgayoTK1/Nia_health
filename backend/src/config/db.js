@@ -45,20 +45,31 @@ const testConnection = async () => {
 };
 
 // Execute query helper
-const query = async (sql, params = []) => {
-  try {
-    console.log('🔧 DB Query Function:', {
-      sql: sql.substring(0, 100) + '...',
-      paramsLength: params.length,
-      params,
-      paramsTypes: params.map(p => typeof p),
-      paramsAreNumbers: params.map(p => typeof p === 'number')
-    });
-    const [results] = await pool.execute(sql, params);
-    return results;
-  } catch (error) {
-    console.error('Database query error:', error);
-    throw error;
+const query = async (sql, params = [], maxRetries = 3) => {
+  let attempt = 0;
+  while (attempt < maxRetries) {
+    try {
+      console.log('🔧 DB Query Function:', {
+        sql: sql.substring(0, 100) + '...',
+        paramsLength: params.length,
+        params,
+        paramsTypes: params.map(p => typeof p),
+        paramsAreNumbers: params.map(p => typeof p === 'number'),
+        attempt
+      });
+      const [results] = await pool.execute(sql, params);
+      return results;
+    } catch (error) {
+      console.error(`Database query error (attempt ${attempt + 1}):`, error);
+      // Retry on transient errors
+      if (['ECONNRESET', 'PROTOCOL_CONNECTION_LOST', 'ETIMEDOUT', 'EPIPE'].includes(error.code) && attempt < maxRetries - 1) {
+        console.warn(`Retrying DB query due to transient error: ${error.code}`);
+        attempt++;
+        await new Promise(res => setTimeout(res, 500 * attempt));
+        continue;
+      }
+      throw error;
+    }
   }
 };
 
