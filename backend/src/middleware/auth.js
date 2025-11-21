@@ -38,6 +38,14 @@ const authenticate = async (req, res, next) => {
       if (patients.length > 0) {
         console.log('👤 Patient details:', { id: user.id, name: user.name, email: user.email, is_verified: user.is_verified });
       }
+    } else if (decoded.userType === 'admin' || decoded.role === 'admin') {
+      console.log('🛡️ Checking admin in database with ID:', decoded.id);
+      const admins = await query(
+        'SELECT id, name, email, role FROM admins WHERE id = ?',
+        [decoded.id]
+      );
+      user = admins[0];
+      console.log('🛡️ Admin found:', user ? 'Yes' : 'No');
     } else {
       console.log('👨‍⚕️ Checking health worker in database with ID:', decoded.id);
       const workers = await query(
