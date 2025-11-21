@@ -106,6 +106,7 @@ const corsOptions = {
     const allowedOrigins = [
       process.env.FRONTEND_URL || 'http://localhost:5173',
       'https://nia-health.vercel.app',
+      'https://nia-health-1a219z2la-ogayo-andrew-aters-projects.vercel.app',
       'http://localhost:5174', // Additional Vite dev server port
       'http://localhost:3000'
     ];
