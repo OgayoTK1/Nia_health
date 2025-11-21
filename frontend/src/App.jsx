@@ -13,6 +13,7 @@ import AdminAlertsPage from './pages/AdminAlertsPage';
 import AdminAuditPage from './pages/AdminAuditPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
 import AdminSecurityPage from './pages/AdminSecurityPage';
+import AdminHealthWorkersPage from './pages/AdminHealthWorkersPage';
 import HealthWorkerDashboardPage from './pages/HealthWorkerDashboardPage';
 import { RequireAuth, RequireAdmin, RequireHealthWorker } from './components/RouteGuards';
 import AppointmentsPage from './pages/AppointmentsPage';
