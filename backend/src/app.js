@@ -23,6 +23,18 @@ const app = express();
 // Trust proxy
 app.set('trust proxy', 1);
 
+// Debug: allow all CORS when DEBUG_ALLOW_ALL_CORS=true (safe temporary toggle)
+if (process.env.DEBUG_ALLOW_ALL_CORS === 'true') {
+  console.warn('⚠️ DEBUG_ALLOW_ALL_CORS enabled — allowing all origins for testing');
+  app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,PATCH,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+    if (req.method === 'OPTIONS') return res.sendStatus(200);
+    next();
+  });
+}
 // Security middleware
 app.use(helmetConfig);
 app.use(cors(corsOptions));
