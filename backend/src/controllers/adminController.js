@@ -7,6 +7,13 @@ const bcrypt = require('bcrypt');
 
 // Dashboard Statistics
 const getDashboardStats = asyncHandler(async (req, res) => {
+  // Debug: print user info from request
+  console.log('🟦 getDashboardStats called by user:', {
+    id: req.user?.id,
+    email: req.user?.email,
+    role: req.user?.role,
+    userType: req.user?.userType
+  });
   // Total patients
   const totalPatients = await query('SELECT COUNT(*) as count FROM patients WHERE is_verified = TRUE');
   

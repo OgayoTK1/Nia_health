@@ -138,9 +138,17 @@ const isHealthWorker = (req, res, next) => {
 
 // Check if user is admin
 const isAdmin = (req, res, next) => {
+  console.log('🔍 isAdmin middleware - checking user:', {
+    userType: req.user?.userType,
+    role: req.user?.role,
+    email: req.user?.email,
+    id: req.user?.id
+  });
   if (req.user && req.user.role === 'admin') {
+    console.log('✅ Admin access granted:', req.user.email);
     return next();
   }
+  console.log('❌ Admin access denied - userType:', req.user?.userType, 'role:', req.user?.role);
   return res.status(403).json({
     success: false,
     message: 'Access denied. Administrators only.'
