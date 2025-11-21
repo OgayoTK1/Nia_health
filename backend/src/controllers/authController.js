@@ -487,8 +487,16 @@ const refreshToken = asyncHandler(async (req, res) => {
 
   const tokenData = tokens[0];
 
-  // Get user data
-  const table = tokenData.user_type === 'patient' ? 'patients' : 'health_workers';
+  // Get user data - map user_type to the correct table (support admin)
+  let table;
+  if (tokenData.user_type === 'patient') {
+    table = 'patients';
+  } else if (tokenData.user_type === 'admin') {
+    table = 'admins';
+  } else {
+    table = 'health_workers';
+  }
+
   const users = await query(`SELECT * FROM ${table} WHERE id = ?`, [tokenData.user_id]);
 
   if (users.length === 0) {

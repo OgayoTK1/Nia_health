@@ -138,8 +138,8 @@ const LoginPage = () => {
         // THEN update auth context state
         setAuthUser(user);
 
-        // Use window.location for full page reload to ensure token is available
-        window.location.href = '/dashboard';
+        // Navigate using React Router to keep SPA state in sync
+        navigate('/dashboard');
       }
     } catch (error) {
       console.error('Login error:', error);
