@@ -55,6 +55,8 @@ function App() {
           <Route path="/admin/clinics" element={<RequireAdmin><AdminClinicsPage /></RequireAdmin>} />
           <Route path="/admin/appointments" element={<RequireAdmin><AdminAppointmentsPage /></RequireAdmin>} />
           <Route path="/admin/referrals" element={<RequireAdmin><AdminReferralsPage /></RequireAdmin>} />
+          <Route path="/admin/health-workers" element={<RequireAdmin><AdminHealthWorkersPage /></RequireAdmin>} />
+          <Route path="/admin/approve-clinics" element={<RequireAdmin><AdminApproveClinicsPage /></RequireAdmin>} />
             <Route path="/admin/alerts" element={<RequireAdmin><AdminAlertsPage /></RequireAdmin>} />
             <Route path="/admin/audit" element={<RequireAdmin><AdminAuditPage /></RequireAdmin>} />
             <Route path="/admin/settings" element={<RequireAdmin><AdminSettingsPage /></RequireAdmin>} />

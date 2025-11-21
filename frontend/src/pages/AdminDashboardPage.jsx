@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { adminAPI } from '../api';
-import { Users, Building2, CalendarCheck, Share2, Bell, Activity, LineChart, LogOut } from 'lucide-react';
+
+import DashboardCharts from '../components/DashboardCharts';
 
 const StatCard = ({ icon: Icon, label, value, color = 'primary' }) => (
   <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
@@ -39,10 +40,83 @@ const AdminDashboardPage = () => {
     if (!isAuthenticated) {
       navigate('/login');
       return;
-    }
+          <div className="min-h-screen bg-gray-50 flex flex-col">
+            {/* Header */}
+            <header className="bg-white shadow sticky top-0 z-10">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                <h1 className="text-2xl font-bold text-primary-700">Admin Dashboard</h1>
+                <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200">
+                  <LogOut className="w-5 h-5" /> Logout
+                </button>
+              </div>
+            </header>
 
-    // Only admins should be here; health workers (non-admin) can be redirected later to a worker dashboard if needed
-    if (user?.role !== 'admin') {
+            <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              {/* Top Summary KPI Cards */}
+              <section className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
+                <StatCard icon={Users} label="Patients" value={stats?.patients ?? '--'} color="primary" />
+                <StatCard icon={Building2} label="Clinics" value={stats?.clinics ?? '--'} color="blue" />
+                <StatCard icon={CalendarCheck} label="Appointments" value={stats?.appointments ?? '--'} color="green" />
+                <StatCard icon={Share2} label="Referrals" value={stats?.referrals ?? '--'} color="primary" />
+                <StatCard icon={Bell} label="Health Alerts" value={stats?.alerts ?? '--'} color="blue" />
+                <StatCard icon={Activity} label="System Uptime" value={stats?.uptime ?? '--'} color="green" />
+              </section>
+
+              {/* Analytics & Reports Section */}
+              <section className="mb-8">
+                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2"><LineChart className="w-6 h-6" /> Analytics & Reports</h2>
+                <DashboardCharts analytics={analytics} />
+              </section>
+
+              {/* Dashboard Modules Grid */}
+              <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* User & Role Management */}
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h3 className="text-lg font-semibold mb-2">User & Role Management</h3>
+                  <p className="text-gray-600 mb-2">Add/remove clinics, manage health worker accounts, reset passwords, approve registrations, assign roles.</p>
+                  <button onClick={() => navigate('/admin/patients')} className="text-primary-600 hover:underline">Manage Patients</button>
+                  <button onClick={() => navigate('/admin/clinics')} className="ml-4 text-blue-600 hover:underline">Manage Clinics</button>
+                  <button onClick={() => navigate('/admin/health-workers')} className="ml-4 text-green-600 hover:underline">Manage Health Workers</button>
+                  <button onClick={() => navigate('/admin/approve-clinics')} className="ml-4 text-purple-600 hover:underline">Approve Clinics</button>
+                </div>
+
+                {/* Alerts & Communication Management */}
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h3 className="text-lg font-semibold mb-2">Alerts & Communication</h3>
+                  <p className="text-gray-600 mb-2">Create, schedule, and monitor health alerts. Choose SMS/Email, review delivery status, manage templates.</p>
+                  <button onClick={() => navigate('/admin/alerts')} className="text-green-600 hover:underline">Manage Alerts</button>
+                </div>
+
+                {/* Referral System Oversight */}
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h3 className="text-lg font-semibold mb-2">Referral System Oversight</h3>
+                  <p className="text-gray-600 mb-2">Track referral timelines, status, bottlenecks, and resolve escalations.</p>
+                  <button onClick={() => navigate('/admin/referrals')} className="text-primary-600 hover:underline">View Referrals</button>
+                </div>
+
+                {/* Audit Logs Section */}
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h3 className="text-lg font-semibold mb-2">Audit Logs</h3>
+                  <p className="text-gray-600 mb-2">Review login attempts, patient record access, activity timestamps. Export logs for compliance.</p>
+                  <button onClick={() => navigate('/admin/audit')} className="text-blue-600 hover:underline">View Audit Logs</button>
+                </div>
+
+                {/* System Settings */}
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h3 className="text-lg font-semibold mb-2">System Settings</h3>
+                  <p className="text-gray-600 mb-2">Backup management, API configs, scaling settings, sync intervals.</p>
+                  <button onClick={() => navigate('/admin/settings')} className="text-green-600 hover:underline">System Settings</button>
+                </div>
+
+                {/* Security & Compliance Overview */}
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h3 className="text-lg font-semibold mb-2">Security & Compliance</h3>
+                  <p className="text-gray-600 mb-2">2FA status, encryption health, breach alerts, role-based access mappings.</p>
+                  <button onClick={() => navigate('/admin/security')} className="text-primary-600 hover:underline">Security Overview</button>
+                </div>
+              </section>
+            </main>
+          </div>
       navigate('/dashboard');
       return;
     }
