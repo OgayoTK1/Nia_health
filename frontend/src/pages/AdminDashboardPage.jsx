@@ -75,10 +75,10 @@ const AdminDashboardPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center">
+      <header className="bg-white shadow sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-4">
             <img src="/logo.svg" alt="NiaHealth Logo" className="h-12 w-12" />
             <div>
@@ -95,6 +95,7 @@ const AdminDashboardPage = () => {
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+              title="Logout"
             >
               <LogOut className="w-4 h-4" />
               Logout
@@ -103,13 +104,13 @@ const AdminDashboardPage = () => {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-4 w-full">
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">{error}</div>
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 animate-pulse">{error}</div>
         )}
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <StatCard icon={Users} label="Total Patients" value={stats?.totalPatients ?? 0} color="primary" />
           <StatCard icon={Building2} label="Active Clinics" value={stats?.totalClinics ?? 0} color="blue" />
           <StatCard icon={CalendarCheck} label="Total Appointments" value={stats?.totalAppointments ?? 0} color="green" />
@@ -117,22 +118,25 @@ const AdminDashboardPage = () => {
         </div>
 
         {/* Secondary Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
           <StatCard icon={CalendarCheck} label="Upcoming Appointments" value={stats?.upcomingAppointments ?? 0} color="green" />
           <StatCard icon={Share2} label="Pending Referrals" value={stats?.pendingReferrals ?? 0} color="blue" />
           <StatCard icon={Activity} label="New Patients (30d)" value={stats?.recentPatients ?? 0} color="primary" />
         </div>
 
         {/* Analytics and Quick Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Analytics placeholder */}
-          <div className="lg:col-span-2 bg-white rounded-lg shadow p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Analytics */}
+          <div className="lg:col-span-2 bg-white rounded-lg shadow p-6 flex flex-col min-h-[300px]">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <LineChart className="w-5 h-5 text-primary-600" />
               System Analytics (30 days)
             </h2>
             {loading ? (
-              <p className="text-gray-600">Loading analytics...</p>
+              <div className="flex-1 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                <span className="ml-3 text-gray-600">Loading analytics...</span>
+              </div>
             ) : (
               <div className="text-sm text-gray-600">
                 <p className="mb-2">Appointment records: {analytics?.appointmentTrends?.length ?? 0}</p>
@@ -143,13 +147,33 @@ const AdminDashboardPage = () => {
           </div>
 
           {/* Quick Alert Composer */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow p-6 flex flex-col">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <Bell className="w-5 h-5 text-red-600" />
               Send Health Alert
             </h2>
             <AlertComposer />
           </div>
+        </div>
+
+        {/* Quick Links */}
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <button className="bg-primary-600 text-white rounded-lg p-4 shadow hover:bg-primary-700 transition-colors font-semibold" title="View Patients">
+            <Users className="w-6 h-6 mb-2" />
+            Manage Patients
+          </button>
+          <button className="bg-blue-600 text-white rounded-lg p-4 shadow hover:bg-blue-700 transition-colors font-semibold" title="View Clinics">
+            <Building2 className="w-6 h-6 mb-2" />
+            Manage Clinics
+          </button>
+          <button className="bg-green-600 text-white rounded-lg p-4 shadow hover:bg-green-700 transition-colors font-semibold" title="View Appointments">
+            <CalendarCheck className="w-6 h-6 mb-2" />
+            Manage Appointments
+          </button>
+          <button className="bg-red-600 text-white rounded-lg p-4 shadow hover:bg-red-700 transition-colors font-semibold" title="View Referrals">
+            <Share2 className="w-6 h-6 mb-2" />
+            Manage Referrals
+          </button>
         </div>
       </main>
 
