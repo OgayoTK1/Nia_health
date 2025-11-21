@@ -158,19 +158,35 @@ const AdminDashboardPage = () => {
 
         {/* Quick Links */}
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button className="bg-primary-600 text-white rounded-lg p-4 shadow hover:bg-primary-700 transition-colors font-semibold" title="View Patients">
+          <button
+            className="bg-primary-600 text-white rounded-lg p-4 shadow hover:bg-primary-700 transition-colors font-semibold"
+            title="View Patients"
+            onClick={() => window.location.href = '/admin/patients'}
+          >
             <Users className="w-6 h-6 mb-2" />
             Manage Patients
           </button>
-          <button className="bg-blue-600 text-white rounded-lg p-4 shadow hover:bg-blue-700 transition-colors font-semibold" title="View Clinics">
+          <button
+            className="bg-blue-600 text-white rounded-lg p-4 shadow hover:bg-blue-700 transition-colors font-semibold"
+            title="View Clinics"
+            onClick={() => window.location.href = '/admin/clinics'}
+          >
             <Building2 className="w-6 h-6 mb-2" />
             Manage Clinics
           </button>
-          <button className="bg-green-600 text-white rounded-lg p-4 shadow hover:bg-green-700 transition-colors font-semibold" title="View Appointments">
+          <button
+            className="bg-green-600 text-white rounded-lg p-4 shadow hover:bg-green-700 transition-colors font-semibold"
+            title="View Appointments"
+            onClick={() => window.location.href = '/admin/appointments'}
+          >
             <CalendarCheck className="w-6 h-6 mb-2" />
             Manage Appointments
           </button>
-          <button className="bg-red-600 text-white rounded-lg p-4 shadow hover:bg-red-700 transition-colors font-semibold" title="View Referrals">
+          <button
+            className="bg-red-600 text-white rounded-lg p-4 shadow hover:bg-red-700 transition-colors font-semibold"
+            title="View Referrals"
+            onClick={() => window.location.href = '/admin/referrals'}
+          >
             <Share2 className="w-6 h-6 mb-2" />
             Manage Referrals
           </button>

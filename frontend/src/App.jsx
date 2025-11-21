@@ -5,6 +5,10 @@ import RegisterPage from './pages/RegisterPage';
 import VerifyOTPPage from './pages/VerifyOTPPage';
 import DashboardPage from './pages/DashboardPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
+import AdminPatientsPage from './pages/AdminPatientsPage';
+import AdminClinicsPage from './pages/AdminClinicsPage';
+import AdminAppointmentsPage from './pages/AdminAppointmentsPage';
+import AdminReferralsPage from './pages/AdminReferralsPage';
 import HealthWorkerDashboardPage from './pages/HealthWorkerDashboardPage';
 import { RequireAuth, RequireAdmin, RequireHealthWorker } from './components/RouteGuards';
 import AppointmentsPage from './pages/AppointmentsPage';
@@ -43,6 +47,10 @@ function App() {
           <Route path="/verify-otp" element={<VerifyOTPPage />} />
           <Route path="/dashboard" element={<RequireAuth><DashboardPage /></RequireAuth>} />
           <Route path="/admin" element={<RequireAdmin><AdminDashboardPage /></RequireAdmin>} />
+          <Route path="/admin/patients" element={<RequireAdmin><AdminPatientsPage /></RequireAdmin>} />
+          <Route path="/admin/clinics" element={<RequireAdmin><AdminClinicsPage /></RequireAdmin>} />
+          <Route path="/admin/appointments" element={<RequireAdmin><AdminAppointmentsPage /></RequireAdmin>} />
+          <Route path="/admin/referrals" element={<RequireAdmin><AdminReferralsPage /></RequireAdmin>} />
           <Route path="/worker-dashboard" element={<RequireHealthWorker><HealthWorkerDashboardPage /></RequireHealthWorker>} />
           <Route path="/appointments" element={<AppointmentsPage />} />
           <Route path="/referrals" element={<ReferralsPage />} />
