@@ -39,6 +39,9 @@ if (process.env.DEBUG_ALLOW_ALL_CORS === 'true') {
 app.use(helmetConfig);
 app.use(cors(corsOptions));
 
+// Ensure preflight (OPTIONS) requests are handled with the same CORS options
+app.options('*', cors(corsOptions));
+
 // Body parser middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
