@@ -22,10 +22,13 @@ export const AuthProvider = ({ children }) => {
     // Check if user is logged in
     const storedUser = localStorage.getItem('user');
     const token = localStorage.getItem('accessToken');
-    
+    console.debug('Auth init - storedUser present?', !!storedUser, 'token present?', !!token);
+
     if (storedUser && storedUser !== 'undefined' && token) {
       try {
-        setUser(JSON.parse(storedUser));
+        const parsed = JSON.parse(storedUser);
+        console.debug('Auth init - parsed stored user:', parsed);
+        setUser(parsed);
         setIsAuthenticated(true);
       } catch (error) {
         console.error('Error parsing stored user:', error);
@@ -97,6 +100,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const setAuthUser = (userData) => {
+    console.debug('setAuthUser called with:', userData);
     setUser(userData);
     setIsAuthenticated(true);
   };

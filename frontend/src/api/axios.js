@@ -48,26 +48,49 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Log error details to help debugging of refresh/user lookup failures
+    try {
+      console.error('API request error:', {
+        url: originalRequest?.url,
+        method: originalRequest?.method,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+    } catch (logErr) {
+      console.error('Failed to log API error', logErr);
+    }
+
     // If token expired, try to refresh
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
         const refreshToken = localStorage.getItem('refreshToken');
-        if (refreshToken) {
-          const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
-            refreshToken,
-          });
-
-          const { accessToken, refreshToken: newRefreshToken } = response.data.data;
-          
-          localStorage.setItem('accessToken', accessToken);
-          localStorage.setItem('refreshToken', newRefreshToken);
-
-          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-          return api(originalRequest);
+        if (!refreshToken) {
+          console.warn('No refresh token available when handling 401 for', originalRequest?.url);
+          // No refresh token - force logout
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
+          return Promise.reject(error);
         }
+
+        const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+          refreshToken,
+        });
+
+        const { accessToken, refreshToken: newRefreshToken } = response.data.data;
+        
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', newRefreshToken);
+
+        originalRequest.headers = originalRequest.headers || {};
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        console.debug('Token refreshed, retrying original request:', originalRequest?.url);
+        return api(originalRequest);
       } catch (refreshError) {
+        console.error('Token refresh failed:', refreshError?.response?.data || refreshError.message || refreshError);
         // Refresh failed, logout user
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
