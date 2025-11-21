@@ -14,6 +14,7 @@ import AdminAuditPage from './pages/AdminAuditPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
 import AdminSecurityPage from './pages/AdminSecurityPage';
 import AdminHealthWorkersPage from './pages/AdminHealthWorkersPage';
+import AdminApproveClinicsPage from './pages/AdminApproveClinicsPage';
 import HealthWorkerDashboardPage from './pages/HealthWorkerDashboardPage';
 import { RequireAuth, RequireAdmin, RequireHealthWorker } from './components/RouteGuards';
 import AppointmentsPage from './pages/AppointmentsPage';
