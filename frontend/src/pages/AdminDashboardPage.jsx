@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { adminAPI } from '../api';
+import { Users, Building2, CalendarCheck, Share2, Bell, Activity, LineChart, LogOut } from 'lucide-react';
 
 import DashboardCharts from '../components/DashboardCharts';
 
