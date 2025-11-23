@@ -250,12 +250,13 @@ const createAlert = asyncHandler(async (req, res) => {
     }
 
     // Send emails asynchronously (non-blocking for real-time response)
+    let sentCount = recipients.length; // Expected count for immediate response
     setImmediate(async () => {
-      let sentCount = 0;
+      let actualSentCount = 0;
       for (const recipient of recipients) {
         try {
           await sendHealthAlert(recipient.email, { subject, message });
-          sentCount++;
+          actualSentCount++;
         } catch (error) {
           console.error(`Failed to send alert to ${recipient.email}:`, error);
         }
@@ -266,7 +267,7 @@ const createAlert = asyncHandler(async (req, res) => {
         await query(
           `UPDATE alerts SET email_sent = TRUE, sent_count = ?, delivery_status = 'sent', sent_at = NOW() 
            WHERE id = ?`,
-          [sentCount, alertId]
+          [actualSentCount, alertId]
         );
       } catch (updateErr) {
         console.error('Failed to update alert status:', updateErr);
