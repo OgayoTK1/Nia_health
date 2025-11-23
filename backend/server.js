@@ -42,6 +42,16 @@ const startServer = async () => {
       process.exit(1);
     }
 
+    // Optionally run safe startup migrations (enable by setting RUN_DB_MIGRATIONS=true in env)
+    if (process.env.RUN_DB_MIGRATIONS === 'true') {
+      try {
+        const { runStartupMigrations } = require('./src/config/migrateOnStart');
+        await runStartupMigrations();
+      } catch (migErr) {
+        console.warn('⚠️ Startup migrations failed (non-fatal):', migErr.message || migErr);
+      }
+    }
+
     // Verify email configuration (optional - don't exit if fails)
     await verifyEmailConfig();
 
