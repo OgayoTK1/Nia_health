@@ -289,17 +289,25 @@ const AlertComposer = () => {
     e.preventDefault();
     setFeedback('');
 
-    // Client-side validation to avoid backend 400s
-    if (!subject.trim()) {
-      setFeedback('Subject is required');
+    // Client-side validation to match backend requirements
+    if (!subject.trim() || subject.trim().length < 5) {
+      setFeedback('Subject is required and must be at least 5 characters');
       return;
     }
-    if (!message.trim()) {
-      setFeedback('Message is required');
+    if (!message.trim() || message.trim().length < 10) {
+      setFeedback('Message is required and must be at least 10 characters');
+      return;
+    }
+    if (!['all', 'patients', 'health_workers', 'specific'].includes(targetGroup)) {
+      setFeedback('Invalid target group selected');
       return;
     }
     if (targetGroup === 'specific' && !targetLocation.trim()) {
       setFeedback('Please provide a location when Target Group is Specific');
+      return;
+    }
+    if (targetLocation && targetLocation.length > 255) {
+      setFeedback('Location must not exceed 255 characters');
       return;
     }
 
