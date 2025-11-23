@@ -234,25 +234,19 @@ const createAlert = asyncHandler(async (req, res) => {
 
     const alertId = result.insertId;
 
-    // Get target recipients
-    let recipients = [];
-    
-    if (target_group === 'all' || target_group === 'patients') {
-      const patients = await query('SELECT email, name FROM patients WHERE is_verified = TRUE');
-      recipients = [...recipients, ...patients];
-    }
-    
-    if (target_group === 'all' || target_group === 'health_workers') {
-      const workers = await query('SELECT email, name FROM health_workers WHERE is_active = TRUE');
-      recipients = [...recipients, ...workers];
-    }
 
-    if (target_group === 'specific' && target_location) {
-      const patients = await query(
-        'SELECT email, name FROM patients WHERE address LIKE ? AND is_verified = TRUE',
-        [`%${target_location}%`]
-      );
-      recipients = [...recipients, ...patients];
+    // Get all registered users (patients and health workers)
+    let recipients = [];
+    try {
+      const patients = await query('SELECT email, name FROM patients WHERE is_verified = TRUE');
+      const workers = await query('SELECT email, name FROM health_workers WHERE is_active = TRUE');
+      recipients = [...patients, ...workers];
+    } catch (recErr) {
+      console.error('Error fetching recipients:', recErr);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to fetch registered users for alert delivery.'
+      });
     }
 
     // Send emails (in background)
