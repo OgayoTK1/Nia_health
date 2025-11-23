@@ -38,6 +38,17 @@ const runStartupMigrations = async () => {
     );
 
     console.log('✅ Ensured `alerts` table exists (created if missing).');
+
+    // Drop foreign key if it exists (for existing tables)
+    try {
+      await query(`ALTER TABLE alerts DROP FOREIGN KEY alerts_ibfk_1`);
+      console.log('✅ Dropped foreign key from `alerts` table.');
+    } catch (fkErr) {
+      // Ignore if FK doesn't exist
+      if (fkErr.code !== 'ER_CANT_DROP_FIELD_OR_KEY') {
+        console.warn('⚠️ Could not drop FK (non-fatal):', fkErr.message);
+      }
+    }
   } catch (err) {
     console.warn('⚠️ Could not create `alerts` table (non-fatal):', err.message);
   }
