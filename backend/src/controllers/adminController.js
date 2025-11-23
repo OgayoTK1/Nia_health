@@ -249,23 +249,29 @@ const createAlert = asyncHandler(async (req, res) => {
       });
     }
 
-    // Send emails (in background)
-    let sentCount = 0;
-    for (const recipient of recipients) {
-      try {
-        await sendHealthAlert(recipient.email, { subject, message });
-        sentCount++;
-      } catch (error) {
-        console.error(`Failed to send alert to ${recipient.email}:`, error);
+    // Send emails asynchronously (non-blocking for real-time response)
+    setImmediate(async () => {
+      let sentCount = 0;
+      for (const recipient of recipients) {
+        try {
+          await sendHealthAlert(recipient.email, { subject, message });
+          sentCount++;
+        } catch (error) {
+          console.error(`Failed to send alert to ${recipient.email}:`, error);
+        }
       }
-    }
 
-    // Update alert status
-    await query(
-      `UPDATE alerts SET email_sent = TRUE, sent_count = ?, delivery_status = 'sent', sent_at = NOW() 
-       WHERE id = ?`,
-      [sentCount, alertId]
-    );
+      // Update alert status after sending
+      try {
+        await query(
+          `UPDATE alerts SET email_sent = TRUE, sent_count = ?, delivery_status = 'sent', sent_at = NOW() 
+           WHERE id = ?`,
+          [sentCount, alertId]
+        );
+      } catch (updateErr) {
+        console.error('Failed to update alert status:', updateErr);
+      }
+    });
 
     // Log audit
     await logAudit(userId, 'admin', 'create', 'alert', alertId, `Health alert sent to ${sentCount} recipients`, req);
