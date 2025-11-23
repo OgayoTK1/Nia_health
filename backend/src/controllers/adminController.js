@@ -224,66 +224,79 @@ const getAllHealthWorkers = asyncHandler(async (req, res) => {
 const createAlert = asyncHandler(async (req, res) => {
   const { subject, message, target_group, target_location } = req.body;
   const userId = req.user.id;
-
-  // Create alert
-  const result = await query(
-    `INSERT INTO alerts (subject, message, target_group, target_location, created_by) 
-     VALUES (?, ?, ?, ?, ?)`,
-    [subject, message, target_group, target_location || null, userId]
-  );
-
-  const alertId = result.insertId;
-
-  // Get target recipients
-  let recipients = [];
-  
-  if (target_group === 'all' || target_group === 'patients') {
-    const patients = await query('SELECT email, name FROM patients WHERE is_verified = TRUE');
-    recipients = [...recipients, ...patients];
-  }
-  
-  if (target_group === 'all' || target_group === 'health_workers') {
-    const workers = await query('SELECT email, name FROM health_workers WHERE is_active = TRUE');
-    recipients = [...recipients, ...workers];
-  }
-
-  if (target_group === 'specific' && target_location) {
-    const patients = await query(
-      'SELECT email, name FROM patients WHERE address LIKE ? AND is_verified = TRUE',
-      [`%${target_location}%`]
+  try {
+    // Create alert
+    const result = await query(
+      `INSERT INTO alerts (subject, message, target_group, target_location, created_by) 
+       VALUES (?, ?, ?, ?, ?)`,
+      [subject, message, target_group, target_location || null, userId]
     );
-    recipients = [...recipients, ...patients];
-  }
 
-  // Send emails (in background)
-  let sentCount = 0;
-  for (const recipient of recipients) {
-    try {
-      await sendHealthAlert(recipient.email, { subject, message });
-      sentCount++;
-    } catch (error) {
-      console.error(`Failed to send alert to ${recipient.email}:`, error);
+    const alertId = result.insertId;
+
+    // Get target recipients
+    let recipients = [];
+    
+    if (target_group === 'all' || target_group === 'patients') {
+      const patients = await query('SELECT email, name FROM patients WHERE is_verified = TRUE');
+      recipients = [...recipients, ...patients];
     }
-  }
-
-  // Update alert status
-  await query(
-    `UPDATE alerts SET email_sent = TRUE, sent_count = ?, delivery_status = 'sent', sent_at = NOW() 
-     WHERE id = ?`,
-    [sentCount, alertId]
-  );
-
-  // Log audit
-  await logAudit(userId, 'admin', 'create', 'alert', alertId, `Health alert sent to ${sentCount} recipients`, req);
-
-  res.status(201).json({
-    success: true,
-    message: `Health alert created and sent to ${sentCount} recipients`,
-    data: {
-      id: alertId,
-      sentCount
+    
+    if (target_group === 'all' || target_group === 'health_workers') {
+      const workers = await query('SELECT email, name FROM health_workers WHERE is_active = TRUE');
+      recipients = [...recipients, ...workers];
     }
-  });
+
+    if (target_group === 'specific' && target_location) {
+      const patients = await query(
+        'SELECT email, name FROM patients WHERE address LIKE ? AND is_verified = TRUE',
+        [`%${target_location}%`]
+      );
+      recipients = [...recipients, ...patients];
+    }
+
+    // Send emails (in background)
+    let sentCount = 0;
+    for (const recipient of recipients) {
+      try {
+        await sendHealthAlert(recipient.email, { subject, message });
+        sentCount++;
+      } catch (error) {
+        console.error(`Failed to send alert to ${recipient.email}:`, error);
+      }
+    }
+
+    // Update alert status
+    await query(
+      `UPDATE alerts SET email_sent = TRUE, sent_count = ?, delivery_status = 'sent', sent_at = NOW() 
+       WHERE id = ?`,
+      [sentCount, alertId]
+    );
+
+    // Log audit
+    await logAudit(userId, 'admin', 'create', 'alert', alertId, `Health alert sent to ${sentCount} recipients`, req);
+
+    return res.status(201).json({
+      success: true,
+      message: `Health alert created and sent to ${sentCount} recipients`,
+      data: {
+        id: alertId,
+        sentCount
+      }
+    });
+
+  } catch (error) {
+    console.error('createAlert error:', error);
+    // Handle missing table specifically
+    if (error && error.code === 'ER_NO_SUCH_TABLE') {
+      return res.status(500).json({
+        success: false,
+        message: 'Database table not available: alerts. Please run database migrations or contact the administrator.'
+      });
+    }
+    // Re-throw other errors to be handled by asyncHandler/global error handler
+    throw error;
+  }
 });
 
 // Get all alerts
@@ -291,27 +304,38 @@ const getAllAlerts = asyncHandler(async (req, res) => {
   const { page = 1, limit = 20 } = req.query;
   const offset = (page - 1) * limit;
 
-  const alerts = await query(
-    `SELECT a.*, hw.name as created_by_name
-     FROM alerts a
-     JOIN health_workers hw ON a.created_by = hw.id
-     ORDER BY a.created_at DESC
-     LIMIT ? OFFSET ?`,
-    [parseInt(limit), offset]
-  );
+  try {
+    const alerts = await query(
+      `SELECT a.*, hw.name as created_by_name
+       FROM alerts a
+       JOIN health_workers hw ON a.created_by = hw.id
+       ORDER BY a.created_at DESC
+       LIMIT ? OFFSET ?`,
+      [parseInt(limit), offset]
+    );
 
-  const total = await query('SELECT COUNT(*) as total FROM alerts');
+    const total = await query('SELECT COUNT(*) as total FROM alerts');
 
-  res.json({
-    success: true,
-    data: alerts,
-    pagination: {
-      page: parseInt(page),
-      limit: parseInt(limit),
-      total: total[0].total,
-      pages: Math.ceil(total[0].total / limit)
+    return res.json({
+      success: true,
+      data: alerts,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: total[0].total,
+        pages: Math.ceil(total[0].total / limit)
+      }
+    });
+  } catch (error) {
+    console.error('getAllAlerts error:', error);
+    if (error && error.code === 'ER_NO_SUCH_TABLE') {
+      return res.status(500).json({
+        success: false,
+        message: 'Database table not available: alerts. Please run database migrations or contact the administrator.'
+      });
     }
-  });
+    throw error;
+  }
 });
 
 // Get audit logs
