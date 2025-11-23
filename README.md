@@ -202,6 +202,7 @@ Create `backend/.env` with the values that match your environment. All values ar
 | `RATE_LIMIT_WINDOW` | optional | 15 | Rate limiter window in minutes |
 | `RATE_LIMIT_MAX_REQUESTS` | optional | 100 | Requests allowed per window |
 | `SESSION_TIMEOUT` | optional | 1800000 | Session timeout in ms |
+| `RUN_DB_MIGRATIONS` | optional | true | On startup, automatically create missing tables/columns |
 
 > **Frontend:** Set `frontend/.env` with `VITE_API_URL` when the API base URL differs from the default `http://localhost:5000/api`.
 > **Compliance placeholder:** [Insert data privacy/compliance requirements link here]
@@ -283,6 +284,10 @@ VALUES (
 ```
 
 Update the password hash if you prefer a different credential.
+
+### Automatic Migrations (Recommended)
+
+If you set `RUN_DB_MIGRATIONS=true` in your backend environment, the server will automatically create missing tables (e.g., `alerts`) and columns (e.g., `user_type` in `audit_logs`) on startup. This is safe and idempotent, and can be removed after initial deployment.
 
 ---
 
@@ -516,6 +521,7 @@ Deploy `dist/` to Netlify/Vercel and update `FRONTEND_URL` in Railway vars.
 | Port 5000 already in use | Stray Node process | `Get-Process node | Stop-Process -Force` (Windows) or `killall node` (macOS/Linux) |
 | OTP emails not received | SendGrid sandbox or domain not verified | Verify sender in SendGrid dashboard, check spam folder |
 | Frontend `npm run dev` exits 1 | Missing `.env` or backend offline | Check Vite logs, verify `VITE_API_URL`, ensure backend reachable |
+| `Database table not available: alerts` | Table missing in MySQL | Set `RUN_DB_MIGRATIONS=true` and redeploy, or run the provided SQL to create the table |
 
 ---
 
