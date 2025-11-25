@@ -43,6 +43,15 @@ NiaHealth digitizes how community clinics, referral hospitals, and patients coll
   - Admins manage clinics, broadcast campaigns, and review system activity logs.
 - **Current Status:** Local development environment ready; API + React SPA run in dev mode; automated tests in place; deployment-ready build scripts provided; documentation synced with rubric needs.
 
+## Current Live Deployment
+
+- **Frontend (React SPA):** [https://nia-health.vercel.app/](https://nia-health.vercel.app/) (Hosted on Vercel)
+- **Backend (Express API):** [https://nia-health.onrender.com/](https://nia-health.onrender.com/) (Hosted on Render)
+- **Database:** FreeSQL (sql12.freesqldatabase.com) - MySQL instance
+- **Email Service:** SendGrid (Transactional emails for OTP and alerts)
+
+> **Note:** FreeSQL may have limitations on remote connections. If you encounter connection issues, consider migrating to a cloud database like Render's MySQL or PlanetScale for better reliability.
+
 ---
 
 ## System Architecture
@@ -189,7 +198,7 @@ Create `backend/.env` with the values that match your environment. All values ar
 | `DB_USER` | ✅ | root | Database user |
 | `DB_PASSWORD` | ✅ | supersecret | Database password |
 | `DB_NAME` | ✅ | niahealth | Target schema |
-| `FRONTEND_URL` | ✅ | http://localhost:5173 | Allowed CORS origin |
+| `FRONTEND_URL` | ✅ | https://nia-health.vercel.app | Allowed CORS origin (production) |
 | `JWT_SECRET` | ✅ | change_me_token | Access token signing secret |
 | `JWT_REFRESH_SECRET` | ✅ | change_me_refresh | Refresh token secret |
 | `JWT_EXPIRES_IN` | ✅ | 30m | Access token TTL |
@@ -334,23 +343,31 @@ Configure the API endpoint via `VITE_API_URL` if the backend runs on a different
 
 ## API Quick Reference
 
-Example requests to verify core flows after setup:
+Example requests to verify core flows (use live URLs for production testing):
 
 ```bash
-# Health check
+# Health check (local)
 curl http://localhost:5000/health
 
-# Register patient
+# Health check (production)
+curl https://nia-health.onrender.com/health
+
+# Register patient (local)
 curl -X POST http://localhost:5000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"name":"Jane Doe","email":"jane@example.com","password":"Passw0rd!","phone":"+254700000000"}'
 
-# Login patient
+# Register patient (production)
+curl -X POST https://nia-health.onrender.com/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Jane Doe","email":"jane@example.com","password":"Passw0rd!","phone":"+254700000000"}'
+
+# Login patient (local)
 curl -X POST http://localhost:5000/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"jane@example.com","password":"Passw0rd!"}'
 
-# Nearest clinics (Nairobi CBD example)
+# Nearest clinics (Nairobi CBD example, local)
 curl "http://localhost:5000/api/clinics/nearest?latitude=-1.286389&longitude=36.817223&radius=50&limit=5"
 ```
 
@@ -358,108 +375,54 @@ curl "http://localhost:5000/api/clinics/nearest?latitude=-1.286389&longitude=36.
 
 ## Deployment Guide
 
-### 1. Prepare environment
+### Current Hosting Setup
 
-- Provision MySQL (e.g., Amazon RDS, Railway, PlanetScale). Import `docs/DB_SCHEMA.sql`.
-- Create production-ready `.env` with strong secrets and hosted DB credentials.
+The application is currently deployed as follows:
 
-### 2. Backend deployment checklist
+#### Frontend Deployment (Vercel)
+1. Repository connected to Vercel via GitHub integration.
+2. Build command: `npm run build`
+3. Output directory: `dist/`
+4. Environment variable: `VITE_API_URL=https://nia-health.onrender.com/api`
+5. Live URL: [https://nia-health.vercel.app/](https://nia-health.vercel.app/)
 
-1. `npm install --production` (or `npm ci`) in `backend/`.
-2. Set environment variables on your host (Render, Railway, Azure, etc.).
-3. Launch with `npm start` (which runs `node server.js`).
-4. Add HTTPS termination (use platform-provided SSL or reverse proxy).
+#### Backend Deployment (Render)
+1. Repository connected to Render via GitHub integration.
+2. Build command: `npm install`
+3. Start command: `npm start`
+4. Environment variables set in Render dashboard (see [Environment Variables](#environment-variables) section).
+5. Automatic deployments on push to `main` branch.
+6. Live URL: [https://nia-health.onrender.com/](https://nia-health.onrender.com/)
 
-### 3. Frontend deployment checklist
+#### Database (FreeSQL)
+- MySQL instance hosted on FreeSQL.
+- Connection details configured in Render backend environment variables.
+- Schema loaded via automatic migrations (`RUN_DB_MIGRATIONS=true`).
 
-1. Update `frontend/.env` with production API base.
-2. `npm run build` to generate `dist/`.
-3. Deploy `dist/` to Netlify, Vercel, Azure Static Web Apps, or any static host.
-4. Set environment variable `VITE_API_URL` in hosting dashboard if needed.
+### Manual Deployment Steps
 
-### 4. Email notifications
+#### 1. Prepare Environment
+- Ensure MySQL schema is loaded (automatic via migrations).
+- Create production `.env` with secure secrets.
 
-- Store `SENDGRID_API_KEY`, `EMAIL_FROM_*` in your hosting provider's secret manager.
-- Optional: set verified sender domain in SendGrid for production.
+#### 2. Backend Deployment Checklist
+1. Push changes to `main` branch (triggers Render auto-deploy).
+2. Monitor Render logs for successful startup and migrations.
+3. Verify `/health` endpoint returns 200.
 
-### Recommended Hosting: Railway (Backend + MySQL)
+#### 3. Frontend Deployment Checklist
+1. Push changes to `main` branch (triggers Vercel auto-deploy).
+2. Verify build succeeds and API calls work.
 
-Railway can host the Node.js service and provision a MySQL database quickly.
+#### 4. Email Configuration
+- SendGrid API key configured in Render environment.
+- Verified sender domain set up for production emails.
 
-#### A. Create Project & Services
-1. Sign in at https://railway.app
-2. New Project → Add a MySQL database service.
-3. New → Deploy from GitHub → select this repository; set working directory to `backend/`.
-
-#### B. Map Environment Variables
-Set Railway Variables using MySQL service outputs:
-
-| Variable | Value (Railway) |
-|----------|-----------------|
-| PORT | 5000 (or use Railway's provided PORT) |
-| DB_HOST | MYSQLHOST |
-| DB_PORT | MYSQLPORT |
-| DB_USER | MYSQLUSER |
-| DB_PASSWORD | MYSQLPASSWORD |
-| DB_NAME | MYSQLDATABASE |
-| JWT_SECRET | (random 32+ chars) |
-| JWT_REFRESH_SECRET | (second random string) |
-| JWT_EXPIRES_IN | 30m |
-| JWT_REFRESH_EXPIRES_IN | 7d |
-| SENDGRID_API_KEY | Your SG key |
-| EMAIL_FROM_ADDRESS | noreply@yourdomain.com |
-| EMAIL_FROM_NAME | NiaHealth |
-| FRONTEND_URL | Deployed frontend URL |
-| RATE_LIMIT_WINDOW | 15 |
-| RATE_LIMIT_MAX_REQUESTS | 100 |
-| LOGIN_RATE_LIMIT_MAX | 5 |
-| SESSION_TIMEOUT | 1800000 |
-| NODE_ENV | production |
-
-#### C. Load Schema
-
-```powershell
-mysql -h $Env:MYSQLHOST -P $Env:MYSQLPORT -u $Env:MYSQLUSER -p$Env:MYSQLPASSWORD $Env:MYSQLDATABASE < docs/DB_SCHEMA.sql
-mysql -h $Env:MYSQLHOST -P $Env:MYSQLPORT -u $Env:MYSQLUSER -p$Env:MYSQLPASSWORD $Env:MYSQLDATABASE < docs/migrations/add_clinic_coordinates.sql
-```
-
-#### D. Seed Admin (Optional)
-
-```powershell
-mysql -h $Env:MYSQLHOST -P $Env:MYSQLPORT -u $Env:MYSQLUSER -p$Env:MYSQLPASSWORD $Env:MYSQLDATABASE -e "INSERT INTO clinics (name,address,phone,is_active) VALUES ('Head Office Clinic','Central Nairobi','+254700000000',1);"
-mysql -h $Env:MYSQLHOST -P $Env:MYSQLPORT -u $Env:MYSQLUSER -p$Env:MYSQLPASSWORD $Env:MYSQLDATABASE -e "INSERT INTO health_workers (name,email,password_hash,clinic_id,role,is_active,is_verified) VALUES ('Platform Administrator','admin@niahealth.com','$2b$10$CwTycUXWue0Thq9StjUM0uJ8zr5E/6.mQxa7R/efVtG7ONmGda5y.',1,'admin',TRUE,TRUE);"
-```
-
-#### E. Automatic Deploys
-Push to `main` triggers a build. Ensure `backend/package.json` has `start` script.
-
-#### F. Verify
-
-```powershell
-curl https://<your-service>.up.railway.app/health
-curl -X POST https://<your-service>.up.railway.app/api/auth/register -H "Content-Type: application/json" -d '{"name":"Test","email":"test@example.com","password":"Passw0rd!"}'
-```
-
-#### G. Frontend
-Set `VITE_API_URL=https://<your-service>.up.railway.app/api` then build:
-
-```powershell
-cd frontend
-echo "VITE_API_URL=https://<your-service>.up.railway.app/api" > .env
-npm run build
-```
-
-Deploy `dist/` to Netlify/Vercel and update `FRONTEND_URL` in Railway vars.
-
-#### H. Logs & Monitoring
-- View live logs in Railway dashboard.
-- Add uptime monitor hitting `/health`.
-- Later: add Sentry DSN as `SENTRY_DSN`.
-
-#### I. Common Adjustments
-- If port mismatch: ensure `server.js` uses `process.env.PORT || 5000`.
-- If connection issues: confirm SSL requirements (Railway MySQL may require TLS; add `ssl:{rejectUnauthorized:false}` to pool config if needed).
-- Optimize pool size (lower `connectionLimit` if reaching MySQL limits).
+### Troubleshooting Deployment
+- **Render Build Failures:** Check logs for missing dependencies or environment variables.
+- **Vercel Build Failures:** Ensure `VITE_API_URL` is set correctly.
+- **Database Connection Issues:** FreeSQL may block remote connections; consider upgrading to Render MySQL.
+- **CORS Errors:** Ensure `FRONTEND_URL` in Render matches Vercel domain.
 
 ---
 
@@ -516,12 +479,15 @@ Deploy `dist/` to Netlify/Vercel and update `FRONTEND_URL` in Railway vars.
 |---------|--------------|-----|
 | `ECONNREFUSED 127.0.0.1:3306` | MySQL not running or wrong credentials | Start DB, confirm `.env` values, re-run `testConnection` via server logs |
 | `SendGrid API key not configured` warning | Missing/invalid `SENDGRID_API_KEY` | Add valid key (starts with `SG.`) or disable email features in dev |
-| CORS error in browser | `FRONTEND_URL` mismatch | Update backend `.env` to include deployed origin |
+| CORS error in browser | `FRONTEND_URL` mismatch | Update Render backend env var to `https://nia-health.vercel.app` |
 | 401 after refresh | Refresh token missing/expired | Ensure `/api/auth/refresh` reachable and localStorage tokens kept |
 | Port 5000 already in use | Stray Node process | `Get-Process node | Stop-Process -Force` (Windows) or `killall node` (macOS/Linux) |
 | OTP emails not received | SendGrid sandbox or domain not verified | Verify sender in SendGrid dashboard, check spam folder |
 | Frontend `npm run dev` exits 1 | Missing `.env` or backend offline | Check Vite logs, verify `VITE_API_URL`, ensure backend reachable |
-| `Database table not available: alerts` | Table missing in MySQL | Set `RUN_DB_MIGRATIONS=true` and redeploy, or run the provided SQL to create the table |
+| `Database table not available: alerts` | Table missing in MySQL | Set `RUN_DB_MIGRATIONS=true` in Render and redeploy, or run the provided SQL to create the table |
+| FreeSQL connection timeout | Remote connections blocked | FreeSQL may not allow external access; migrate to Render MySQL or PlanetScale |
+| Render build failures | Missing env vars or dependencies | Check Render logs, ensure all required env vars are set |
+| Vercel build failures | API URL mismatch | Ensure `VITE_API_URL` points to Render backend URL |
 
 ---
 
@@ -560,7 +526,7 @@ Optional: demo video or slide deck link
 | **Functionality** | End-to-end workflows for patients, health workers, and admins; automated Jest suites verified via `npm test`; live health check endpoint. | [Insert owner] | ✅ / 🔲 |
 | **Presentation** | React SPA with Tailwind styling, documented API responses, default admin setup instructions, and usage screenshots. Add slide deck/video link in `docs/`. | [Insert owner] | ✅ / 🔲 |
 | **Repository & Version Control** | Structured repo layout, setup scripts (`setup.ps1`, `quick-setup.sh`), and documentation links across `docs/`. | [Insert owner] | ✅ / 🔲 |
-| **Deployment** | Explicit backend/frontend deployment steps, environment variable tables, and external service prerequisites (SendGrid, MySQL). | [Insert owner] | ✅ / 🔲 |
+| **Deployment** | Frontend deployed on Vercel, backend on Render with FreeSQL database, environment variables configured, automatic deployments enabled. | [Insert owner] | ✅ |
 | **Operations** | Logging strategy, audit trail storage, backup guidance, troubleshooting matrix, and health monitoring endpoint documented above. | [Insert owner] | ✅ / 🔲 |
 | **Compliance** | Data privacy, incident response, and accessibility statements compiled. | [Insert owner] | ✅ / 🔲 |
 
