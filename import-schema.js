@@ -12,24 +12,24 @@ async function importSchema() {
     multipleStatements: true
   });
 
-  console.log('✅ Connected to Railway MySQL');
+  console.log(' Connected to Railway MySQL');
 
   const schemaPath = path.join(__dirname, 'docs', 'DB_SCHEMA_SIMPLE.sql');
   const schema = fs.readFileSync(schemaPath, 'utf8');
 
-  console.log('📥 Importing schema...');
+  console.log(' Importing schema...');
   
   try {
     await connection.query(schema);
-    console.log('✅ Schema imported successfully!');
+    console.log(' Schema imported successfully!');
   } catch (error) {
-    console.log('⚠️ Some errors occurred (this is normal for CREATE DATABASE and SET GLOBAL):');
+    console.log(' Some errors occurred (this is normal for CREATE DATABASE and SET GLOBAL):');
     console.log(error.message);
   }
 
   // Verify tables
   const [tables] = await connection.query('SHOW TABLES');
-  console.log('\n📋 Tables created:');
+  console.log('\n Tables created:');
   tables.forEach(row => console.log('  -', Object.values(row)[0]));
 
   await connection.end();
