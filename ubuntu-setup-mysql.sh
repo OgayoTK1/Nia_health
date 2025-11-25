@@ -4,7 +4,7 @@
 echo "🔧 NiaHealth MySQL Setup for Ubuntu WSL"
 echo "=========================================="
 echo ""
-echo "⚠️  IMPORTANT: This script needs sudo access"
+echo "  IMPORTANT: This script needs sudo access"
 echo ""
 echo "Step 1: Stopping MySQL..."
 sudo /etc/init.d/mysql stop
@@ -35,7 +35,7 @@ CREATE DATABASE IF NOT EXISTS niahealth CHARACTER SET utf8mb4 COLLATE utf8mb4_un
 EOF
 
 if [ $? -eq 0 ]; then
-    echo "✅ Database created!"
+    echo " Database created!"
     
     # Find the SQL file - handle both Windows and WSL paths
     SCHEMA_FILE=""
@@ -50,21 +50,21 @@ if [ $? -eq 0 ]; then
         mysql -u root niahealth < "$SCHEMA_FILE"
         
         if [ $? -eq 0 ]; then
-            echo "✅ Schema imported successfully!"
+            echo " Schema imported successfully!"
             echo ""
-            echo "✅ Setup complete!"
+            echo " Setup complete!"
             echo ""
             echo "You can now run:"
             echo "  cd backend && npm run dev   (Backend on port 5000)"
             echo "  cd frontend && npm run dev  (Frontend on port 5173)"
         else
-            echo "❌ Failed to import schema"
+            echo " Failed to import schema"
         fi
     else
-        echo "❌ Schema file not found"
+        echo " Schema file not found"
     fi
 else
-    echo "❌ Failed to create database"
+    echo " Failed to create database"
 fi
 
 echo ""
