@@ -136,7 +136,7 @@ async function createTables() {
     try {
         console.log('Connecting to the database...');
         connection = await mysql.createConnection(dbConfig);
-        console.log('✅ Database connection successful.');
+        console.log(' Database connection successful.');
 
         for (const query of createTablesQueries) {
             // Extract table name from query for logging
@@ -144,18 +144,18 @@ async function createTables() {
             try {
                 console.log(`\nCreating table '${tableName}'...`);
                 await connection.query(query);
-                console.log(`✅ Table '${tableName}' created successfully or already exists.`);
+                console.log(` Table '${tableName}' created successfully or already exists.`);
             } catch (error) {
-                console.error(`❌ Error creating table '${tableName}':`, error.message);
+                console.error(` Error creating table '${tableName}':`, error.message);
                 // If one table fails, we stop the process
                 throw error;
             }
         }
 
-        console.log('\n🎉 All missing tables have been created successfully!');
+        console.log('\n All missing tables have been created successfully!');
 
     } catch (error) {
-        console.error('\n❌ An error occurred during the database operation:', error.message);
+        console.error('\n An error occurred during the database operation:', error.message);
     } finally {
         if (connection) {
             console.log('Closing database connection.');
