@@ -1,20 +1,20 @@
-# 🎉 NiaHealth Ubuntu WSL2 Setup - Summary
+#  NiaHealth Ubuntu WSL2 Setup - Summary
 
-## ✅ What Has Been Installed
+##  What Has Been Installed
 
 Your Ubuntu WSL2 environment is **fully prepared** with:
 
 | Component | Version | Status |
 |-----------|---------|--------|
-| Node.js | 20.19.5 | ✅ Installed |
-| npm | 10.8.2 | ✅ Installed |
-| MySQL Server | 8.0.43 | ✅ Installed & Running |
-| Backend Dependencies | All | ✅ Installed (456 packages) |
-| Frontend Dependencies | All | ✅ Installed (406 packages) |
+| Node.js | 20.19.5 |  Installed |
+| npm | 10.8.2 |  Installed |
+| MySQL Server | 8.0.43 |  Installed & Running |
+| Backend Dependencies | All |  Installed (456 packages) |
+| Frontend Dependencies | All |  Installed (406 packages) |
 
 ---
 
-## 🎯 Next: Quick Start (3 Simple Steps)
+##  Next: Quick Start (3 Simple Steps)
 
 ### **Step 1: Fix MySQL Root Access (Run Once)**
 
@@ -63,7 +63,7 @@ You should see:
 
 ---
 
-## 🌐 Access Your Application
+##  Access Your Application
 
 **Open your browser and go to:**
 ```
@@ -77,7 +77,7 @@ You'll see the NiaHealth application with:
 
 ---
 
-## 🔐 First Time Usage
+##  First Time Usage
 
 ### Create a Patient Account:
 1. Click **"Sign Up"** button
@@ -99,7 +99,7 @@ Same as above, but select **"Health Worker"** instead
 
 ---
 
-## 📁 Important Files & Directories
+##  Important Files & Directories
 
 ```
 Nia_health/
@@ -129,7 +129,7 @@ Nia_health/
 
 ---
 
-## 🛠️ Backend Port 5000
+##  Backend Port 5000
 
 **API Base URL:** `http://localhost:5000/api`
 
@@ -142,7 +142,7 @@ Example endpoints:
 
 ---
 
-## 🎨 Frontend Port 5173
+##  Frontend Port 5173
 
 **Access:** `http://localhost:5173`
 
@@ -154,7 +154,7 @@ Pages available:
 
 ---
 
-## 📊 Database
+##  Database
 
 **Database Name:** `niahealth`
 
@@ -223,7 +223,7 @@ mysql -u root -e "SELECT 1;"
 
 ---
 
-## 📚 Documentation
+##  Documentation
 
 - **`UBUNTU_QUICKSTART.md`** - Ubuntu setup guide (you are here)
 - **`DEV_GUIDE.md`** - Development guide
@@ -262,7 +262,7 @@ mysql -u root -e "SELECT 1;"
 
 ---
 
-## ✅ Checklist for Full Setup
+##  Checklist for Full Setup
 
 - [ ] Run `wsl bash ubuntu-setup-mysql.sh` (MySQL setup)
 - [ ] Verify database created: `mysql -u root -e "SHOW DATABASES;"`
@@ -272,11 +272,11 @@ mysql -u root -e "SELECT 1;"
 - [ ] Register a test account
 - [ ] Login successfully
 - [ ] See dashboard
-- [ ] Start developing! 🚀
+- [ ] Start developing! 
 
 ---
 
-## 🎯 What You Can Do Now
+##  What You Can Do Now
 
 1. **Register & Login** - Test authentication system
 2. **View Profile** - See your patient information
@@ -287,7 +287,7 @@ mysql -u root -e "SELECT 1;"
 
 ---
 
-## 📞 Support
+##  Support
 
 If you encounter issues:
 
@@ -299,7 +299,7 @@ If you encounter issues:
 
 ---
 
-## 🚀 You're Ready!
+##  You're Ready!
 
 Everything is installed and configured. Just run the MySQL setup script once, then you can start developing!
 
@@ -310,4 +310,3 @@ wsl bash ubuntu-setup-mysql.sh
 
 Then follow the "Quick Start" steps above.
 
-**Happy Coding! 🎉**
