@@ -3,7 +3,7 @@
 <!-- Optional: place your project logo at docs/logo.png -->
 <!-- ![NiaHealth Logo](docs/logo.png) -->
 
-> 📌 Requirements Specification: [Insert requirements link here]
+>  Requirements Specification: [Insert requirements link here]
 
 NiaHealth digitizes how community clinics, referral hospitals, and patients collaborate. The platform streamlines appointment booking, digital referrals, patient follow-up, and broadcast health alerts so underserved communities can access timely, preventive care.
 
@@ -136,8 +136,6 @@ Nia_health/
 ---
 
 ## Requirements
-
-- **Reference spec:** [Insert requirements link here]
 - **Core dependencies:** Node.js ≥ 20, npm ≥ 9, MySQL ≥ 8, Git.
 - **Optional accelerators:** Docker Desktop (for local MySQL container), SendGrid account (for live emails), PowerShell 5+ or Bash (for provided automation scripts).
 
@@ -191,21 +189,21 @@ Create `backend/.env` with the values that match your environment. All values ar
 
 | Variable | Required | Example | Purpose |
 |----------|----------|---------|---------|
-| `NODE_ENV` | ✅ | development | Controls logging & middleware behaviour |
-| `PORT` | ✅ | 5000 | Express server port |
-| `DB_HOST` | ✅ | 127.0.0.1 | MySQL host or Docker service name |
-| `DB_PORT` | ✅ | 3306 | MySQL port |
-| `DB_USER` | ✅ | root | Database user |
-| `DB_PASSWORD` | ✅ | supersecret | Database password |
-| `DB_NAME` | ✅ | niahealth | Target schema |
-| `FRONTEND_URL` | ✅ | https://nia-health.vercel.app | Allowed CORS origin (production) |
-| `JWT_SECRET` | ✅ | change_me_token | Access token signing secret |
-| `JWT_REFRESH_SECRET` | ✅ | change_me_refresh | Refresh token secret |
-| `JWT_EXPIRES_IN` | ✅ | 30m | Access token TTL |
-| `JWT_REFRESH_EXPIRES_IN` | ✅ | 7d | Refresh token TTL |
-| `SENDGRID_API_KEY` | ⚠️ | SG.xxxxxx | Enables transactional email |
-| `EMAIL_FROM_ADDRESS` | ✅ | noreply@niahealth.local | Default email sender |
-| `EMAIL_FROM_NAME` | ✅ | NiaHealth | Default sender name |
+| `NODE_ENV` |  | development | Controls logging & middleware behaviour |
+| `PORT` | | 5000 | Express server port |
+| `DB_HOST` |  | 127.0.0.1 | MySQL host or Docker service name |
+| `DB_PORT` |  | 3306 | MySQL port |
+| `DB_USER` |  | root | Database user |
+| `DB_PASSWORD` |  | supersecret | Database password |
+| `DB_NAME` |  | niahealth | Target schema |
+| `FRONTEND_URL` |  | https://nia-health.vercel.app | Allowed CORS origin (production) |
+| `JWT_SECRET` |  | change_me_token | Access token signing secret |
+| `JWT_REFRESH_SECRET` |  | change_me_refresh | Refresh token secret |
+| `JWT_EXPIRES_IN` |  | 30m | Access token TTL |
+| `JWT_REFRESH_EXPIRES_IN` |  | 7d | Refresh token TTL |
+| `SENDGRID_API_KEY` |  | SG.xxxxxx | Enables transactional email |
+| `EMAIL_FROM_ADDRESS` |  | noreply@niahealth.local | Default email sender |
+| `EMAIL_FROM_NAME` |  | NiaHealth | Default sender name |
 | `EMAIL_DEBUG` | optional | true | Verbose SendGrid logging in dev |
 | `LOGIN_RATE_LIMIT_MAX` | optional | 5 | Failed login threshold |
 | `RATE_LIMIT_WINDOW` | optional | 15 | Rate limiter window in minutes |
@@ -214,7 +212,6 @@ Create `backend/.env` with the values that match your environment. All values ar
 | `RUN_DB_MIGRATIONS` | optional | true | On startup, automatically create missing tables/columns |
 
 > **Frontend:** Set `frontend/.env` with `VITE_API_URL` when the API base URL differs from the default `http://localhost:5000/api`.
-> **Compliance placeholder:** [Insert data privacy/compliance requirements link here]
 
 **Sample `backend/.env` template**
 
@@ -225,7 +222,7 @@ PORT=5000
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_USER=root
-DB_PASSWORD=yourpassword
+DB_PASSWORD=mypassword
 DB_NAME=niahealth
 
 FRONTEND_URL=http://localhost:5173
@@ -275,7 +272,7 @@ SOURCE docs/DB_SCHEMA.sql;
 
 ### Default accounts
 
-Create an initial admin (bcrypt hash for `Admin@123` provided):
+Create an initial admin (bcrypt hash for `` provided):
 
 ```sql
 INSERT INTO clinics (name, address, phone, is_active) VALUES ('Head Office Clinic', 'Central Nairobi', '+254700000000', 1);
@@ -452,15 +449,15 @@ The application is currently deployed as follows:
 - Role-based access control enforced at middleware layer (`auth.js`).
 - Helmet, rate-limiting, and input sanitization mitigate common web threats.
 - Audit trail captures user actions with IP and user agent metadata.
-- Data residency & privacy: [Insert compliance requirements link here]. Document consent model once defined.
-- Incident response playbook: [Insert incident response link here].
+- Data residency & privacy. Document consent model once defined.
+- Incident response playbook
 
 ### Accessibility (A11y)
 
 - Color contrast meets WCAG AA via Tailwind defaults (verify in UI review).
 - Semantic HTML in components; ensure form labels and ARIA attributes for modals.
 - Keyboard navigation: verify focus states on dialogs and forms.
-- Localization/i18n: [Insert localization strategy or deferral note here].
+
 
 ---
 
@@ -491,17 +488,14 @@ The application is currently deployed as follows:
 
 ---
 
-## Screenshots & Demo
+## Demo
 
-Add key UI screenshots for rubric presentation (login, booking, referral, dashboard):
+ (login, booking, referral, dashboard):
 
-- [Insert screenshot link/path]
-- [Insert screenshot link/path]
-
-Optional: demo video or slide deck link
+## demo video 
 
 - [Insert demo video link]
-- [Insert slide deck link]
+
 
 ---
 
@@ -519,20 +513,7 @@ Optional: demo video or slide deck link
 
 ---
 
-## Rubric Readiness Checklist
 
-| Rubric Pillar | Evidence | Owner | Status |
-|----------------|----------|-------|--------|
-| **Functionality** | End-to-end workflows for patients, health workers, and admins; automated Jest suites verified via `npm test`; live health check endpoint. | [Insert owner] | ✅ / 🔲 |
-| **Presentation** | React SPA with Tailwind styling, documented API responses, default admin setup instructions, and usage screenshots. Add slide deck/video link in `docs/`. | [Insert owner] | ✅ / 🔲 |
-| **Repository & Version Control** | Structured repo layout, setup scripts (`setup.ps1`, `quick-setup.sh`), and documentation links across `docs/`. | [Insert owner] | ✅ / 🔲 |
-| **Deployment** | Frontend deployed on Vercel, backend on Render with FreeSQL database, environment variables configured, automatic deployments enabled. | [Insert owner] | ✅ |
-| **Operations** | Logging strategy, audit trail storage, backup guidance, troubleshooting matrix, and health monitoring endpoint documented above. | [Insert owner] | ✅ / 🔲 |
-| **Compliance** | Data privacy, incident response, and accessibility statements compiled. | [Insert owner] | ✅ / 🔲 |
-
-Update this table before submission to show rubric alignment with links to demos, screenshots, or evidence.
-
----
 
 ## Known Issues & Limitations
 
