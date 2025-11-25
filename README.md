@@ -3,7 +3,7 @@
 <!-- Optional: place your project logo at docs/logo.png -->
 <!-- ![NiaHealth Logo](docs/logo.png) -->
 
->  Requirements Specification: [Insert requirements link here]
+>  Requirements Specification: [https://docs.google.com/document/d/1OLdoBT7Qb-5OQ-zE5v2jpAe0jXTr4hI3jwkyCHZwlLE/edit?usp=sharing ]
 
 NiaHealth digitizes how community clinics, referral hospitals, and patients collaborate. The platform streamlines appointment booking, digital referrals, patient follow-up, and broadcast health alerts so underserved communities can access timely, preventive care.
 
@@ -291,7 +291,7 @@ VALUES (
 
 Update the password hash if you prefer a different credential.
 
-### Automatic Migrations (Recommended)
+### Automatic Migrations 
 
 If you set `RUN_DB_MIGRATIONS=true` in your backend environment, the server will automatically create missing tables (e.g., `alerts`) and columns (e.g., `user_type` in `audit_logs`) on startup. This is safe and idempotent, and can be removed after initial deployment.
 
@@ -494,7 +494,7 @@ The application is currently deployed as follows:
 
 ## demo video 
 
-- [Insert demo video link]
+- [https://www.loom.com/share/02c6474fef964738a99addd06188ad3d]
 
 
 ---
