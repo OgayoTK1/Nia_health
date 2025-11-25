@@ -1,16 +1,16 @@
-# 🚀 Ubuntu WSL2 NiaHealth - Quick Start Guide
+#  Ubuntu WSL2 NiaHealth - Quick Start Guide
 
-## ✅ Installation Complete!
+##  Installation Complete!
 
 Your Ubuntu WSL2 environment has everything installed:
-- ✅ Node.js v20.19.5
-- ✅ npm 10.8.2  
-- ✅ MySQL Server 8.0.43
-- ✅ All backend and frontend dependencies
+-  Node.js v20.19.5
+-  npm 10.8.2  
+-  MySQL Server 8.0.43
+-  All backend and frontend dependencies
 
 ---
 
-## 📋 Step 1: Reset MySQL Root Password (Important!)
+##  Step 1: Reset MySQL Root Password (Important!)
 
 Since MySQL was installed with a password, we need to reset it. Run these commands in Ubuntu:
 
@@ -44,7 +44,7 @@ mysql -u root
 
 ---
 
-## 📋 Step 2: Create the Database
+##  Step 2: Create the Database
 
 Once MySQL is accessible, run:
 
@@ -65,7 +65,7 @@ mysql -u root -e "USE niahealth; SHOW TABLES;"
 
 ---
 
-## 🚀 Step 3: Start the Application
+##  Step 3: Start the Application
 
 ### Terminal 1 - Backend:
 ```bash
@@ -93,7 +93,7 @@ sudo service mysql start
 
 ---
 
-## 🌐 Access Your Application
+##  Access Your Application
 
 Open your browser and go to:
 ```
@@ -104,7 +104,7 @@ You should see the NiaHealth home page with login and register options.
 
 ---
 
-## 📝 First Time Setup
+##  First Time Setup
 
 1. **Register as a Patient:**
    - Click "Sign Up"
@@ -167,7 +167,7 @@ sudo systemctl restart mysql
 
 ---
 
-## 📂 Project Structure in WSL
+##  Project Structure in WSL
 
 ```
 /mnt/c/Users/user/Desktop/Summative\ Assigment/Nia_health/
@@ -188,17 +188,17 @@ sudo systemctl restart mysql
 
 ---
 
-## 🎯 Next Steps
+##  Next Steps
 
-1. ✅ Reset MySQL root password
-2. ✅ Create database and import schema
-3. ✅ Start backend and frontend
-4. ✅ Test the application
-5. ✅ Start building features!
+1.  Reset MySQL root password
+2.  Create database and import schema
+3.  Start backend and frontend
+4.  Test the application
+5.  Start building features!
 
 ---
 
-## 💡 Tips
+##  Tips
 
 - Keep WSL terminal running with MySQL service in background
 - Use multiple WSL tabs/windows for backend, frontend, and MySQL
@@ -207,7 +207,7 @@ sudo systemctl restart mysql
 
 ---
 
-**Happy Coding! 🚀**
+
 
 For more details, check:
 - `docs/INSTALLATION.md` - Full installation guide
