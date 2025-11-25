@@ -9,7 +9,7 @@ async function createSimpleTables() {
     database: 'sql12808713'
   });
 
-  console.log('✅ Connected to FreeSQLDatabase');
+  console.log(' Connected to FreeSQLDatabase');
 
   const queries = [
     `CREATE TABLE IF NOT EXISTS patients (
@@ -48,14 +48,14 @@ async function createSimpleTables() {
   for (const query of queries) {
     try {
       await connection.query(query);
-      console.log('✅ Query executed');
+      console.log(' Query executed');
     } catch (error) {
-      console.log('⚠️', error.message.substring(0, 50));
+      console.log('', error.message.substring(0, 50));
     }
   }
 
   const [tables] = await connection.query('SHOW TABLES');
-  console.log('\n📋 Tables created:');
+  console.log('\n Tables created:');
   tables.forEach(row => console.log('  -', Object.values(row)[0]));
 
   await connection.end();
